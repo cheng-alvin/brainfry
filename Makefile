@@ -1,3 +1,2 @@
-brainfry.o: brainfry.c
-	$(CC) -I ./libs/libjas/include -c brainfry.c
-
+brainfry: brainfry.c
+	$(CC) -I ./libs/libjas/include brainfry.c -o $@ -L ./libs/libjas/lib -ljas
