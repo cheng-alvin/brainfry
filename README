@@ -1,0 +1,14 @@
+Brain-Fry
+=========
+
+A stupid and simple Brain F*ck compiler for x64, supports emitting ELF64
+object files. This project uses my library - Jas to compile assembly code
+down into a plain ELF file. Just like the Brain F*ck language itself, its
+not very designed to be used for writing actual software, but instead is 
+proof of concept for the Jas assembler.
+
+Please see https://github.com/cheng-alvin/jas if you're interested in deve-
+loping compilers and applications like this. 
+
+In order to build the compiler, simply run `make` in the root directory, 
+all linking and everything will be automatic.
