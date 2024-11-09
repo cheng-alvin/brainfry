@@ -8,6 +8,7 @@ char *file;
 
 void error_callback(const char *msg) {
   fprintf(stderr, "%s: error: %s\n", file, msg);
+  exit(1);
 }
 
 void *append(void *arr, size_t type_size, size_t *len, void *data,
@@ -20,6 +21,7 @@ void *append(void *arr, size_t type_size, size_t *len, void *data,
 }
 
 int main(int argc, char **argv) {
+  err_add_callback(error_callback);
 
   if (argc != 2) {
     fprintf(stderr, "%s: usage: %s <file>\n", argv[0], argv[0]);
@@ -100,20 +102,90 @@ int main(int argc, char **argv) {
       },
   };
 
+  instruction_t min = (instruction_t){
+      .instr = INSTR_SUB,
+      .operands =
+          (operand_t[]){
+              (operand_t){
+                  .type = OP_M64,
+                  .data = &(enum registers){REG_RSP},
+                  .offset = 0,
+              },
+              (operand_t){
+                  .type = OP_IMM32,
+                  .data = &(uint32_t){1},
+              },
+              OP_NONE,
+              OP_NONE,
+          },
+  };
+  instruction_t next = (instruction_t){
+      .instr = INSTR_SUB,
+      .operands =
+          (operand_t[]){
+              (operand_t){
+                  .type = OP_R64,
+                  .data = &(enum registers){REG_RSP},
+              },
+              (operand_t){
+                  .type = OP_IMM32,
+                  .data = &(uint32_t){1},
+              },
+              OP_NONE,
+              OP_NONE,
+          },
+  };
+  instruction_t back = (instruction_t){
+      .instr = INSTR_ADD,
+      .operands =
+          (operand_t[]){
+              (operand_t){
+                  .type = OP_R64,
+                  .data = &(enum registers){REG_RSP},
+              },
+              (operand_t){
+                  .type = OP_IMM32,
+                  .data = &(uint32_t){1},
+              },
+              OP_NONE,
+              OP_NONE,
+          },
+  };
+  instruction_t plus = (instruction_t){
+      .instr = INSTR_ADD,
+      .operands =
+          (operand_t[]){
+              (operand_t){
+                  .type = OP_M64,
+                  .data = &(enum registers){REG_RSP},
+                  .offset = 0,
+              },
+              (operand_t){
+                  .type = OP_IMM32,
+                  .data = &(uint32_t){1},
+              },
+              OP_NONE,
+              OP_NONE,
+          },
+  };
+
   do {
     ch = fgetc(f);
     switch (ch) {
     case '>':
-
+      instr = append(instr, sizeof(instruction_t), &len, &next, sizeof(next));
       break;
 
     case '<':
+      instr = append(instr, sizeof(instruction_t), &len, &back, sizeof(back));
       break;
 
     case '+':
+      instr = append(instr, sizeof(instruction_t), &len, &plus, sizeof(plus));
       break;
 
     case '-':
+      instr = append(instr, sizeof(instruction_t), &len, &min, sizeof(min));
       break;
 
     case '.':
@@ -131,7 +203,7 @@ int main(int argc, char **argv) {
   instr = append(instr, sizeof(instruction_t), &len, start, sizeof(start));
   instr = append(instr, sizeof(instruction_t), &len, exit, sizeof(exit));
   buffer_t buf =
-      codegen(MODE_LONG, instr, len * sizeof(instruction_t), CODEGEN_ELF);
+      codegen(MODE_LONG, instr, len * sizeof(instruction_t), CODEGEN_RAW);
 
   FILE *file_out = fopen("main.o", "wb");
   size_t written = fwrite(buf.data, sizeof(uint8_t), buf.len, file_out);
