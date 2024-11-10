@@ -169,6 +169,8 @@ int main(int argc, char **argv) {
           },
   };
 
+  instr = append(instr, sizeof(instruction_t), &len, start, sizeof(start));
+
   do {
     ch = fgetc(f);
     switch (ch) {
@@ -200,10 +202,9 @@ int main(int argc, char **argv) {
 
   } while (ch != EOF);
 
-  instr = append(instr, sizeof(instruction_t), &len, start, sizeof(start));
   instr = append(instr, sizeof(instruction_t), &len, exit, sizeof(exit));
   buffer_t buf =
-      codegen(MODE_LONG, instr, len * sizeof(instruction_t), CODEGEN_RAW);
+      codegen(MODE_LONG, instr, len * sizeof(instruction_t), CODEGEN_ELF);
 
   FILE *file_out = fopen("main.o", "wb");
   size_t written = fwrite(buf.data, sizeof(uint8_t), buf.len, file_out);
