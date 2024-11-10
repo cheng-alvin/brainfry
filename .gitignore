@@ -54,3 +54,4 @@ dkms.conf
 # Local files
 brainfry
 .vscode/
+.DS_Store
