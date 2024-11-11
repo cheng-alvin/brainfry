@@ -169,6 +169,86 @@ int main(int argc, char **argv) {
           },
   };
 
+  instruction_t print[] = (instruction_t[]){
+      (instruction_t){
+          .instr = INSTR_MOV,
+          .operands =
+              (operand_t[]){
+                  (operand_t){
+                      .type = OP_R64,
+                      .data = &(enum registers){REG_RDX},
+                  },
+                  (operand_t){
+                      .type = OP_IMM64,
+                      .data = &(uint64_t){1},
+                  },
+                  OP_NONE,
+                  OP_NONE,
+              },
+      },
+
+      (instruction_t){
+          .instr = INSTR_MOV,
+          .operands =
+              (operand_t[]){
+                  (operand_t){
+                      .type = OP_R64,
+                      .data = &(enum registers){REG_RCX},
+                  },
+                  (operand_t){
+                      .type = OP_R64,
+                      .data = &(enum registers){REG_RSP},
+                  },
+                  OP_NONE,
+                  OP_NONE,
+              },
+      },
+
+      (instruction_t){
+          .instr = INSTR_MOV,
+          .operands =
+              (operand_t[]){
+                  (operand_t){
+                      .type = OP_R64,
+                      .data = &(enum registers){REG_RAX},
+                  },
+                  (operand_t){
+                      .type = OP_IMM64,
+                      .data = &(uint64_t){4},
+                  },
+                  OP_NONE,
+                  OP_NONE,
+              },
+      },
+
+      (instruction_t){
+          .instr = INSTR_MOV,
+          .operands =
+              (operand_t[]){
+                  (operand_t){
+                      .type = OP_R64,
+                      .data = &(enum registers){REG_RBX},
+                  },
+                  (operand_t){
+                      .type = OP_IMM64,
+                      .data = &(uint64_t){1},
+                  },
+                  OP_NONE,
+                  OP_NONE,
+              },
+      },
+      (instruction_t){
+          .instr = INSTR_SYSCALL,
+          .operands =
+              (operand_t[]){
+                  OP_NONE,
+                  OP_NONE,
+                  OP_NONE,
+                  OP_NONE,
+              },
+      },
+  };
+
   instr = append(instr, sizeof(instruction_t), &len, start, sizeof(start));
 
   do {
@@ -191,6 +271,7 @@ int main(int argc, char **argv) {
       break;
 
     case '.':
+      instr = append(instr, sizeof(instruction_t), &len, print, sizeof(print));
       break;
 
     case ',':
