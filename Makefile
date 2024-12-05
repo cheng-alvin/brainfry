@@ -1,4 +1,6 @@
-brainfry: brainfry.c
+all: clean libs/libjas brainfry
+
+brainfry:
 	clang -I ./libs/libjas/include brainfry.c -o $@ -L ./libs/libjas/lib -ljas -lstdc++ -g
 
 libs/libjas:
@@ -13,4 +15,4 @@ clean:
 	rm -rf brainfry *.o 
 	mkdir -p libs
 
-.PHONY: clean
+.PHONY: all clean
