@@ -30,7 +30,6 @@
 #include <stddef.h>
 
 /**
-
  * Function for creating a new label with the given name and address
  * as mentioned in the `label_t` struct, storing it in an internal
  * table as a label entry.
@@ -86,7 +85,7 @@ void label_destroy_all();
  *
  * @note Caller is responsible for freeing the memory allocated
  * and handling string creations and declarations.
- * '
+ *
  * @return The pointer to the label entry if found, otherwise `NULL`
  */
 label_t *label_lookup(char *name);
