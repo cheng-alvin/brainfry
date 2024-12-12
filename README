@@ -14,4 +14,4 @@ In order to build the compiler, simply run `make` in the root directory,
 all linking and everything will be automatic.
 
 
-Usage: ./brainfry source.bf
+Usage: ./brainfry <file>
