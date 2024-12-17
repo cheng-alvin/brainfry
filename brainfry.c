@@ -1,4 +1,4 @@
-#include <jas.h>
+#include "instr.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,214 +40,6 @@ int main(int argc, char **argv) {
   size_t len = 1;
 
   instruction_t *instr = malloc(sizeof(instruction_t));
-  instruction_t start[] = (instruction_t[]){
-      // global _start:
-      (instruction_t){
-          .instr = INSTR_DIR_GLOBAL_LABEL,
-          .operands =
-              (operand_t[]){
-                  (operand_t){.type = OP_MISC, .data = "_start"},
-                  OP_NONE,
-                  OP_NONE,
-                  OP_NONE,
-              },
-      },
-  };
-
-  instruction_t exit[] = (instruction_t[]){
-      // mov rax, 60
-      (instruction_t){
-          .instr = INSTR_MOV,
-          .operands =
-              (operand_t[]){
-                  (operand_t){
-                      .type = OP_R64,
-                      .data = &(enum registers){REG_RAX},
-                  },
-                  (operand_t){
-                      .type = OP_IMM64,
-                      .data = &(uint64_t){60},
-                  },
-                  OP_NONE,
-                  OP_NONE,
-              },
-      },
-      // xor rdi, rdi
-      (instruction_t){
-          .instr = INSTR_XOR,
-          .operands =
-              (operand_t[]){
-                  (operand_t){
-                      .type = OP_R64,
-                      .data = &(enum registers){REG_RDI},
-                  },
-                  (operand_t){
-                      .type = OP_R64,
-                      .data = &(enum registers){REG_RDI},
-                  },
-                  OP_NONE,
-                  OP_NONE,
-              },
-      },
-      // syscall
-      (instruction_t){
-          .instr = INSTR_SYSCALL,
-          .operands =
-              (operand_t[]){
-                  OP_NONE,
-                  OP_NONE,
-                  OP_NONE,
-                  OP_NONE,
-              },
-      },
-  };
-
-  instruction_t min = (instruction_t){
-      .instr = INSTR_SUB,
-      .operands =
-          (operand_t[]){
-              (operand_t){
-                  .type = OP_M64,
-                  .data = &(enum registers){REG_RSP},
-                  .offset = 0,
-              },
-              (operand_t){
-                  .type = OP_IMM32,
-                  .data = &(uint32_t){1},
-              },
-              OP_NONE,
-              OP_NONE,
-          },
-  };
-  instruction_t next = (instruction_t){
-      .instr = INSTR_SUB,
-      .operands =
-          (operand_t[]){
-              (operand_t){
-                  .type = OP_R64,
-                  .data = &(enum registers){REG_RSP},
-              },
-              (operand_t){
-                  .type = OP_IMM32,
-                  .data = &(uint32_t){1},
-              },
-              OP_NONE,
-              OP_NONE,
-          },
-  };
-  instruction_t back = (instruction_t){
-      .instr = INSTR_ADD,
-      .operands =
-          (operand_t[]){
-              (operand_t){
-                  .type = OP_R64,
-                  .data = &(enum registers){REG_RSP},
-              },
-              (operand_t){
-                  .type = OP_IMM32,
-                  .data = &(uint32_t){1},
-              },
-              OP_NONE,
-              OP_NONE,
-          },
-  };
-  instruction_t plus = (instruction_t){
-      .instr = INSTR_ADD,
-      .operands =
-          (operand_t[]){
-              (operand_t){
-                  .type = OP_M64,
-                  .data = &(enum registers){REG_RSP},
-                  .offset = 0,
-              },
-              (operand_t){
-                  .type = OP_IMM32,
-                  .data = &(uint32_t){1},
-              },
-              OP_NONE,
-              OP_NONE,
-          },
-  };
-
-  instruction_t print[] = (instruction_t[]){
-      (instruction_t){
-          .instr = INSTR_MOV,
-          .operands =
-              (operand_t[]){
-                  (operand_t){
-                      .type = OP_R64,
-                      .data = &(enum registers){REG_RDI},
-                  },
-                  (operand_t){
-                      .type = OP_IMM64,
-                      .data = &(uint64_t){1},
-                  },
-                  OP_NONE,
-                  OP_NONE,
-              },
-      },
-
-      (instruction_t){
-          .instr = INSTR_MOV,
-          .operands =
-              (operand_t[]){
-                  (operand_t){
-                      .type = OP_R64,
-                      .data = &(enum registers){REG_RSI},
-                  },
-                  (operand_t){
-                      .type = OP_R64,
-                      .data = &(enum registers){REG_RSP},
-                  },
-                  OP_NONE,
-                  OP_NONE,
-              },
-      },
-
-      (instruction_t){
-          .instr = INSTR_MOV,
-          .operands =
-              (operand_t[]){
-                  (operand_t){
-                      .type = OP_R64,
-                      .data = &(enum registers){REG_RAX},
-                  },
-                  (operand_t){
-                      .type = OP_IMM64,
-                      .data = &(uint64_t){1},
-                  },
-                  OP_NONE,
-                  OP_NONE,
-              },
-      },
-
-      (instruction_t){
-          .instr = INSTR_MOV,
-          .operands =
-              (operand_t[]){
-                  (operand_t){
-                      .type = OP_R64,
-                      .data = &(enum registers){REG_RDX},
-                  },
-                  (operand_t){
-                      .type = OP_IMM64,
-                      .data = &(uint64_t){1},
-                  },
-                  OP_NONE,
-                  OP_NONE,
-              },
-      },
-      (instruction_t){
-          .instr = INSTR_SYSCALL,
-          .operands =
-              (operand_t[]){
-                  OP_NONE,
-                  OP_NONE,
-                  OP_NONE,
-                  OP_NONE,
-              },
-      },
-  };
 
   instr = append(instr, sizeof(instruction_t), &len, start, sizeof(start));
 
@@ -275,6 +67,7 @@ int main(int argc, char **argv) {
       break;
 
     case ',':
+      instr = append(instr, sizeof(instruction_t), &len, in, sizeof(in));
       break;
 
     default:
@@ -283,7 +76,7 @@ int main(int argc, char **argv) {
 
   } while (ch != EOF);
 
-  instr = append(instr, sizeof(instruction_t), &len, exit, sizeof(exit));
+  instr = append(instr, sizeof(instruction_t), &len, __exit, sizeof(__exit));
   buffer_t buf =
       codegen(MODE_LONG, instr, len * sizeof(instruction_t), CODEGEN_ELF);
 
