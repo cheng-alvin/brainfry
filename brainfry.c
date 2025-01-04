@@ -19,6 +19,36 @@ void *append(void *arr, size_t type_size, size_t *len, void *data,
   *len = new_len;
   return arr;
 }
+static void compile(instruction_t **instr, size_t *len, char ch) {
+  switch (ch) {
+  case '>':
+    *instr = append(*instr, sizeof(instruction_t), len, &next, sizeof(next));
+    break;
+
+  case '<':
+    *instr = append(*instr, sizeof(instruction_t), len, &back, sizeof(back));
+    break;
+
+  case '+':
+    *instr = append(*instr, sizeof(instruction_t), len, &plus, sizeof(plus));
+    break;
+
+  case '-':
+    *instr = append(*instr, sizeof(instruction_t), len, &min, sizeof(min));
+    break;
+
+  case '.':
+    *instr = append(*instr, sizeof(instruction_t), len, print, sizeof(print));
+    break;
+
+  case ',':
+    *instr = append(*instr, sizeof(instruction_t), len, __in, sizeof(__in));
+    break;
+
+  default:
+    break;
+  }
+}
 
 int main(int argc, char **argv) {
   err_add_callback(error_callback);
@@ -37,43 +67,15 @@ int main(int argc, char **argv) {
   }
 
   char ch;
-  size_t len = 1;
 
   instruction_t *instr = malloc(sizeof(instruction_t));
 
+  size_t len = 1;
   instr = append(instr, sizeof(instruction_t), &len, start, sizeof(start));
 
   do {
     ch = fgetc(f);
-    switch (ch) {
-    case '>':
-      instr = append(instr, sizeof(instruction_t), &len, &next, sizeof(next));
-      break;
-
-    case '<':
-      instr = append(instr, sizeof(instruction_t), &len, &back, sizeof(back));
-      break;
-
-    case '+':
-      instr = append(instr, sizeof(instruction_t), &len, &plus, sizeof(plus));
-      break;
-
-    case '-':
-      instr = append(instr, sizeof(instruction_t), &len, &min, sizeof(min));
-      break;
-
-    case '.':
-      instr = append(instr, sizeof(instruction_t), &len, print, sizeof(print));
-      break;
-
-    case ',':
-      instr = append(instr, sizeof(instruction_t), &len, in, sizeof(in));
-      break;
-
-    default:
-      break;
-    }
-
+    compile(&instr, &len, ch);
   } while (ch != EOF);
 
   instr = append(instr, sizeof(instruction_t), &len, __exit, sizeof(__exit));

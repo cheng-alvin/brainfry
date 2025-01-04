@@ -209,7 +209,7 @@ instruction_t print[] = (instruction_t[]){
     },
 };
 
-instruction_t in[] = (instruction_t[]){
+instruction_t __in[] = (instruction_t[]){
     (instruction_t){
         .instr = INSTR_XOR,
         .operands =
