@@ -4,51 +4,43 @@
 #include <stdlib.h>
 #include <string.h>
 
-char *file;
+static char *file;
 
 void error_callback(const char *msg) {
   fprintf(stderr, "%s: error: %s\n", file, msg);
   exit(1);
 }
 
-void *append(void *arr, size_t type_size, size_t *len, void *data,
-             size_t data_size) {
+static void *append(void *arr, size_t type_size, size_t *len, void *data,
+                    size_t data_size) {
   size_t new_len = *len + data_size / type_size;
   arr = realloc(arr, new_len * type_size);
   memcpy(arr + *len * type_size, data, data_size);
   *len = new_len;
   return arr;
 }
+
+// clang-format off
 static void compile(instruction_t **instr, size_t *len, char ch) {
+  #define DEF_INSTR(in)                                                          \
+   append(*instr, sizeof(instruction_t), len, &in, sizeof(in))
+
   switch (ch) {
-  case '>':
-    *instr = append(*instr, sizeof(instruction_t), len, &next, sizeof(next));
-    break;
+  case '>': *instr = DEF_INSTR(next); break;
+  case '<': *instr = DEF_INSTR(back); break;
+  case '+': *instr = DEF_INSTR(plus); break;
+  case '-': *instr = DEF_INSTR(min); break;
 
-  case '<':
-    *instr = append(*instr, sizeof(instruction_t), len, &back, sizeof(back));
-    break;
-
-  case '+':
-    *instr = append(*instr, sizeof(instruction_t), len, &plus, sizeof(plus));
-    break;
-
-  case '-':
-    *instr = append(*instr, sizeof(instruction_t), len, &min, sizeof(min));
-    break;
-
-  case '.':
-    *instr = append(*instr, sizeof(instruction_t), len, print, sizeof(print));
-    break;
-
-  case ',':
-    *instr = append(*instr, sizeof(instruction_t), len, __in, sizeof(__in));
-    break;
+    //??
+  case '.': *instr = DEF_INSTR(print); break;
+  case ',': *instr = DEF_INSTR(__in); break;
 
   default:
     break;
   }
 }
+#undef DEF_INSTR // Preventing clashes
+// clang-format on
 
 int main(int argc, char **argv) {
   err_add_callback(error_callback);
@@ -77,19 +69,18 @@ int main(int argc, char **argv) {
     ch = fgetc(f);
     compile(&instr, &len, ch);
   } while (ch != EOF);
+  fclose(f);
 
   instr = append(instr, sizeof(instruction_t), &len, __exit, sizeof(__exit));
   buffer_t buf =
       codegen(MODE_LONG, instr, len * sizeof(instruction_t), CODEGEN_ELF);
+  free(instr);
 
   FILE *file_out = fopen("main.o", "wb");
   size_t written = fwrite(buf.data, sizeof(uint8_t), buf.len, file_out);
-
   fclose(file_out);
-  fclose(f);
 
   free(buf.data);
-  free(instr);
 
   return 0;
 }
