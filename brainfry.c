@@ -76,7 +76,15 @@ int main(int argc, char **argv) {
       codegen(MODE_LONG, instr, len * sizeof(instruction_t), CODEGEN_ELF);
   free(instr);
 
-  FILE *file_out = fopen("main.o", "wb");
+  for (size_t i = sizeof(file); i > 0; i--) {
+    if (file[i] == '.') {
+      file[i] = '\0';
+      break;
+    }
+  }
+  strcat(file, ".o");
+
+  FILE *file_out = fopen(file, "wb");
   size_t written = fwrite(buf.data, sizeof(uint8_t), buf.len, file_out);
   fclose(file_out);
 
