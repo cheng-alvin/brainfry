@@ -1,7 +1,7 @@
 all: clean libs/libjas brainfry
 
 brainfry:
-	clang -I ./libs/libjas/include brainfry.c -o $@ -L ./libs/libjas/lib -ljas -lstdc++ -O3 
+	clang -I ./libs/libjas/include brainfry.c -o $@ -L ./libs/libjas/lib -ljas -lstdc++ -Ofast  
 
 libs/libjas:
 	git clone https://github.com/cheng-alvin/jas.git/ 
