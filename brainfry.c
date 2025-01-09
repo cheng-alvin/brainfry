@@ -30,8 +30,6 @@ static void compile(instruction_t **instr, size_t *len, char ch) {
   case '<': *instr = DEF_INSTR(back); break;
   case '+': *instr = DEF_INSTR(plus); break;
   case '-': *instr = DEF_INSTR(min); break;
-
-    //??
   case '.': *instr = DEF_INSTR(print); break;
   case ',': *instr = DEF_INSTR(__in); break;
 
