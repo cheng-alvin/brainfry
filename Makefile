@@ -1,4 +1,4 @@
-all: clean libs/libjas brainfry
+all: libs/libjas brainfry
 
 brainfry:
 	clang -I ./libs/libjas/include brainfry.c -o $@ -L ./libs/libjas/lib -ljas -lstdc++ -Ofast  
