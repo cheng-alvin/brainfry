@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
 
   instruction_t *instr = malloc(sizeof(instruction_t));
 
-  size_t len = 1;
+  size_t len = 0;
   instr = append(instr, sizeof(instruction_t), &len, start, sizeof(start));
 
   do {
@@ -70,8 +70,12 @@ int main(int argc, char **argv) {
   fclose(f);
 
   instr = append(instr, sizeof(instruction_t), &len, __exit, sizeof(__exit));
-  buffer_t buf =
-      codegen(MODE_LONG, instr, len * sizeof(instruction_t), CODEGEN_ELF);
+
+  instruction_t **arr = malloc(sizeof(instruction_t *) * len);
+  for (size_t k = 0; k < len; k++)
+    arr[k] = &instr[k];
+
+  buffer_t buf = codegen(MODE_LONG, arr, len, CODEGEN_ELF);
   free(instr);
 
   for (size_t i = sizeof(file); i > 0; i--) {
