@@ -43,54 +43,60 @@ static void compile(instruction_t **instr, size_t *len, char ch) {
 int main(int argc, char **argv) {
   err_add_callback(error_callback);
 
-  if (argc != 2) {
-    fprintf(stderr, "%s: usage: %s <file>\n", argv[0], argv[0]);
+  if (argc < 2) {
+    fprintf(stderr, "%s: usage: %s filename\n", argv[0], argv[0]);
     return 1;
   }
 
-  file = argv[1];
+  int index = 1;
 
-  FILE *f = fopen(file, "r");
-  if (!f) {
-    fprintf(stderr, "%s: error: could not open file %s\n", argv[0], file);
-    return 1;
-  }
+  while (index < argc) {
+    file = argv[index];
 
-  char ch;
-
-  instruction_t *instr = malloc(sizeof(instruction_t));
-
-  size_t len = 0;
-  instr = append(instr, sizeof(instruction_t), &len, start, sizeof(start));
-
-  do {
-    ch = fgetc(f);
-    compile(&instr, &len, ch);
-  } while (ch != EOF);
-  fclose(f);
-
-  instr = append(instr, sizeof(instruction_t), &len, __exit, sizeof(__exit));
-
-  instruction_t **arr = malloc(sizeof(instruction_t *) * len);
-  for (size_t k = 0; k < len; k++)
-    arr[k] = &instr[k];
-
-  buffer_t buf = codegen(MODE_LONG, arr, len, CODEGEN_ELF);
-  free(instr);
-
-  for (size_t i = sizeof(file); i > 0; i--) {
-    if (file[i] == '.') {
-      file[i] = '\0';
-      break;
+    FILE *f = fopen(file, "r");
+    if (!f) {
+      fprintf(stderr, "%s: error: could not open file %s\n", argv[0], file);
+      return 1;
     }
+
+    char ch;
+
+    instruction_t *instr = malloc(sizeof(instruction_t));
+
+    size_t len = 0;
+    instr = append(instr, sizeof(instruction_t), &len, start, sizeof(start));
+
+    do {
+      ch = fgetc(f);
+      compile(&instr, &len, ch);
+    } while (ch != EOF);
+    fclose(f);
+
+    instr = append(instr, sizeof(instruction_t), &len, __exit, sizeof(__exit));
+
+    instruction_t **arr = malloc(sizeof(instruction_t *) * len);
+    for (size_t k = 0; k < len; k++)
+      arr[k] = &instr[k];
+
+    buffer_t buf = codegen(MODE_LONG, arr, len, CODEGEN_ELF);
+    free(instr);
+
+    for (size_t i = sizeof(file); i > 0; i--) {
+      if (file[i] == '.') {
+        file[i] = '\0';
+        break;
+      }
+    }
+    strcat(file, ".o");
+
+    FILE *file_out = fopen(file, "wb");
+    size_t written = fwrite(buf.data, sizeof(uint8_t), buf.len, file_out);
+    fclose(file_out);
+
+    free(buf.data);
+
+    index++;
   }
-  strcat(file, ".o");
-
-  FILE *file_out = fopen(file, "wb");
-  size_t written = fwrite(buf.data, sizeof(uint8_t), buf.len, file_out);
-  fclose(file_out);
-
-  free(buf.data);
 
   return 0;
 }
