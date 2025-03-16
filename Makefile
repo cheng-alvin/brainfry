@@ -3,6 +3,8 @@ all: libs/libjas/lib/libjas.a brainfry brainfry_debug
 brainfry:
 	clang -I ./libs/libjas/include brainfry.c -o $@ -L ./libs/libjas/lib -ljas -lstdc++ -Ofast  
 
+# Apply custom build steps here: 
+# (e.g patching, branch switching etc. where applicable)
 libs/libjas/lib/libjas.a:
 	git clone https://github.com/cheng-alvin/jas.git/ 
 	mv jas libs/jas
