@@ -78,7 +78,8 @@ int main(int argc, char **argv) {
     for (size_t k = 0; k < len; k++)
       arr[k] = &instr[k];
 
-    buffer_t buf = codegen(MODE_LONG, arr, len, CODEGEN_ELF);
+    codegen_ret ret = codegen(MODE_LONG, arr, len);
+    buffer_t buf = exe_generate(ret);
     free(instr);
 
     for (size_t i = sizeof(file); i > 0; i--) {
