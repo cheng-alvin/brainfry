@@ -78,9 +78,12 @@ int main(int argc, char **argv) {
     for (size_t k = 0; k < len; k++)
       arr[k] = &instr[k];
 
-    codegen_ret ret = codegen(MODE_LONG, arr, len);
+    struct codegen_ret ret = codegen(MODE_LONG, arr, len);
     buffer_t buf = exe_generate(ret);
     free(instr);
+
+    label_destroy_all(ret.label_table, &ret.label_table_size);
+    free(ret.code.data);
 
     for (size_t i = sizeof(file); i > 0; i--) {
       if (file[i] == '.') {
