@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
     buffer_t buf = exe_generate(ret);
     free(instr);
 
-    label_destroy_all(ret.label_table, &ret.label_table_size);
+    label_destroy_all(&ret.label_table, &ret.label_table_size);
     free(ret.code.data);
 
     for (size_t i = sizeof(file); i > 0; i--) {
