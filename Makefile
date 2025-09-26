@@ -10,7 +10,7 @@ brainfry: brainfry.o
 # considered missing and fail.
 
 brainfry_debug: brainfry.o
-	clang $^ -o $@ $(CFLAGS) -g -ljas_debug -gembed-source
+	clang $^ -o $@ $(CFLAGS) -g -ljas_debug
 
 libs/libjas:
 	git clone https://github.com/cheng-alvin/jas.git/ 
