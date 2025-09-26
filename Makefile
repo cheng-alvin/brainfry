@@ -1,7 +1,16 @@
 all: libs/libjas brainfry
 
-brainfry:
-	clang -I ./libs/libjas/include brainfry.c -o $@ -L ./libs/libjas/lib -ljas -lstdc++ -Ofast  
+CFLAGS := -lstdc++ -I ./libs/libjas/include -L ./libs/libjas/lib
+
+brainfry: brainfry.o
+	clang $^ -o $@ $(CFLAGS) -O3 -ljas
+
+# Note when compiling code: `all` target must be fulfilled before the 
+# compilation of this target, otherwise dependant source files would be
+# considered missing and fail.
+
+brainfry_debug: brainfry.o
+	clang $^ -o $@ $(CFLAGS) -g -ljas_debug -gembed-source
 
 libs/libjas:
 	git clone https://github.com/cheng-alvin/jas.git/ 
