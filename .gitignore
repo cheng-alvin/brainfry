@@ -53,6 +53,7 @@ dkms.conf
 
 # Local files
 brainfry
+brainfry_debug
 .vscode/
 .DS_Store
 
