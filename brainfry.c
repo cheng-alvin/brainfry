@@ -21,9 +21,9 @@ static void *append(void *arr, size_t type_size, size_t *len, void *data,
 }
 
 // clang-format off
-static void compile(instruction_t **instr, size_t *len, char ch) {
+static void compile(instr_generic_t **instr, size_t *len, char ch) {
   #define DEF_INSTR(in)                                                          \
-   append(*instr, sizeof(instruction_t), len, &in, sizeof(in))
+   append(*instr, sizeof(instr_generic_t), len, &in, sizeof(in))
 
   switch (ch) {
   case '>': *instr = DEF_INSTR(next); break;
@@ -61,10 +61,10 @@ int main(int argc, char **argv) {
 
     char ch;
 
-    instruction_t *instr = malloc(sizeof(instruction_t));
+    instr_generic_t *instr = malloc(sizeof(instr_generic_t));
 
     size_t len = 0;
-    instr = append(instr, sizeof(instruction_t), &len, start, sizeof(start));
+    instr = append(instr, sizeof(instr_generic_t), &len, start, sizeof(start));
 
     do {
       ch = fgetc(f);
@@ -72,9 +72,10 @@ int main(int argc, char **argv) {
     } while (ch != EOF);
     fclose(f);
 
-    instr = append(instr, sizeof(instruction_t), &len, __exit, sizeof(__exit));
+    instr =
+        append(instr, sizeof(instr_generic_t), &len, __exit, sizeof(__exit));
 
-    instruction_t **arr = malloc(sizeof(instruction_t *) * len);
+    instruction_t **arr = malloc(sizeof(instr_generic_t *) * len);
     for (size_t k = 0; k < len; k++)
       arr[k] = &instr[k];
 
